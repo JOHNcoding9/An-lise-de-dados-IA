@@ -1,5 +1,7 @@
 # Criar arquivo .ipynb
 #instalar nbformat e plotly
+#instalar biblioteca pandas
+#!pip install pandas
 #!pip install nbformat plotly
 #Passo a Passo:
 #Passo 1: importar a base de dados
