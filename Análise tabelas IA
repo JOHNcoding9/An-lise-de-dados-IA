@@ -1,0 +1,78 @@
+# Criar arquivo .ipynb
+#instalar nbformat e plotly
+#!pip install nbformat plotly
+#Passo a Passo:
+#Passo 1: importar a base de dados
+#Passo 2: visualizar a base de dados
+      # entender o que tem na base de dados
+      #encontrar os erros das bases de dados
+#Passo 3:  tratamento de dados - corrigir dados equivocados
+#Passo 4:  análise inicial dos cancelamentos
+#Passo 5:  análise das causas dos cancelamentos
+
+import pandas
+base_dados = pandas.read_csv("cancelamentos.csv")
+# o Customer ID é só um identificador para cada cliente, essa coluna não será util para a análise dessa tabela
+base_dados = base_dados.drop(columns="CustomerID")
+display(base_dados)
+
+# ===================================================================================================================================================================================
+
+# verififcar se existem informações no formato errado ou valores vazios
+display(base_dados.info())
+# excluir linhas com valores vazios utilizando o dropna()
+base_dados = base_dados.dropna()
+display(base_dados.info())
+
+#========================================================================================================================================================================================
+
+# análise inicial dos cancelamentos ( numero de vezes de 0 e 1 se repetem na coluna "cancelou")
+display(base_dados["cancelou"].value_counts())
+
+# pegar esse valor em percentagem
+display(base_dados["cancelou"].value_counts(normalize=True))
+
+# =======================================================================================================================================================================================
+# duração do plano de cada cliente
+import plotly.express as px
+
+grafico = px.histogram(base_dados, x="duracao_contrato",text_auto=True)
+grafico.show()
+grafico = px.histogram(base_dados, x="duracao_contrato", color= "cancelou",text_auto=True)
+grafico.show()
+
+# =======================================================================================================================================================================================
+
+# gerar gráfico para cada coluna da tabela 
+
+for coluna in base_dados.columns:
+    grafico = px.histogram(base_dados,x=coluna, color="cancelou",text_auto=True)
+    grafico.show()
+
+# ===================================================================================================================================================================================
+
+#pontos observados nas tabelas geradas:
+
+# todos os clientes que ligaram mais de 4 vezes para o call-center cancelaram
+  # resolver o problema do cliente em menos de 4 ligaçôes
+# todos os clientes que atrasaram mais de 20 dias de pagamento cancelaram
+  #após 10 dias de atraso, entrar em contato com cliente
+# todos o clientes de contrato mensal cancelaram
+  # oferecer desconto no contrato anual/ trimestral
+
+
+# tabela com os problemas resolvidos
+#call-center
+filtro = base_dados["ligacoes_callcenter"]<=4
+base_dados = base_dados[filtro]
+
+# atraso
+filtro2 =  base_dados["dias_atraso"]<=20
+base_dados = base_dados[filtro2]
+
+#contrato mensal
+filtro3= base_dados["duracao_contrato"]!="Monthly"
+base_dados = base_dados[filtro3]
+
+#percentagem de cancelamentos após ajustes
+display(base_dados["cancelou"].value_counts(normalize=True))
